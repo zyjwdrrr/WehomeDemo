@@ -19,6 +19,7 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -31,14 +32,41 @@ public class HttpUtil {
         this.whenGetInformations = wgi;
     }
 
+    public void getCitiesInformation(String city){
+        doGetInformation doGetInformation = new doGetInformation();
+        doGetInformation.execute(city);
+    }
 
-    private class doGetNameFromGoogle extends AsyncTask<LatLng,Integer,InputStream>{
+    private void parseJSON(InputStream is){
+        String contentString = null;
+        ArrayList<String> details = new ArrayList<>();
+        try {
+            contentString = convertInputStreamToString(is, 5000);
+            JSONObject object = new JSONObject(contentString);
+            JSONObject data = object.getJSONObject("data");
+            details.add("AQI:" + data.getInt("aqi"));
+//            for (int i=0; i < data.length(); i++){
+//                JSONObject jo = data.getJSONObject(i);
+//                String id = jo.getString("id");
+//                Boolean status = jo.getBoolean("status");
+//                planList.AddPlan(id,status);
+//            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        whenGetInformations.invoke(this,details);
+        Log.i("informations", contentString);
+    }
+
+    private class doGetInformation extends AsyncTask<String,Integer,InputStream>{
 
         @Override
-        protected InputStream doInBackground(LatLng... params) {
+        protected InputStream doInBackground(String... params) {
             InputStream is = null;
             try{
-                URL url = new URL("http://maps.google.com/maps/api/geocode/json?latlng=" + params[0].latitude+","+params[0].longitude+"%20&language=en_us&sensor=true");
+                URL url = new URL("https://api.waqi.info/feed/"+ params[0]+ "/?token=7dfc3bc68fcc0b7a19162e4f1d6ba51ff747df04");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(50000 /* milliseconds */);
                 conn.setConnectTimeout(50000 /* milliseconds */);
@@ -55,7 +83,7 @@ public class HttpUtil {
 
         @Override
         protected void onPostExecute(InputStream inputStream) {
-
+            parseJSON(inputStream);
         }
 
 

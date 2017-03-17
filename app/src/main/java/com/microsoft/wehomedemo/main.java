@@ -33,7 +33,7 @@ public class main extends FragmentActivity {
     public WhenGetName whenGetName = new WhenGetName() {
         @Override
         public void invoke(Object sender, String name) {
-            Log.i("GetName",name);
+            myListView.getDetailInformation(name);
         }
     };
 

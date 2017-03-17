@@ -28,6 +28,7 @@ import com.microsoft.wehomedemo.ViewModels.Event.WhenGetInformations;
 import com.microsoft.wehomedemo.ViewModels.Event.WhenGetName;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -75,7 +76,7 @@ public class MapViewModel implements OnMapReadyCallback {
 
     private WhenGetInformations whenGetInformations = new WhenGetInformations() {
         @Override
-        public void invoke(Object sender, String e) {
+        public void invoke(Object sender, ArrayList<String> information) {
 
         }
     };
